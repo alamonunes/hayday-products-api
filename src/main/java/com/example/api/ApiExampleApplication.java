@@ -22,12 +22,13 @@ public class ApiExampleApplication {
     @Bean
     CommandLineRunner runner(ProductService productService) {
         return args -> {
-            ObjectMapper mapper = new ObjectMapper();
-            InputStream inputStream = TypeReference.class.getResourceAsStream("/hayday_goodlist_api.json");
-            List<Product> products = mapper.readValue(inputStream, new TypeReference<List<Product>>() {
-            });
-            products.stream().forEach(product -> productService.saveProduct(product));
-
+            if (productService.listProducts().isEmpty()) {
+                ObjectMapper mapper = new ObjectMapper();
+                InputStream inputStream = TypeReference.class.getResourceAsStream("/hayday_goodlist_api.json");
+                List<Product> products = mapper.readValue(inputStream, new TypeReference<List<Product>>() {
+                });
+                products.forEach(product -> productService.saveProduct(product));
+            }
         };
     }
 }
