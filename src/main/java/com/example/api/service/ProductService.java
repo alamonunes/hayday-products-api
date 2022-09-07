@@ -2,7 +2,6 @@ package com.example.api.service;
 
 import com.example.api.entity.Product;
 import com.example.api.repository.ProductRepository;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -22,49 +21,53 @@ public class ProductService {
     }
 
     public List<Product> listProducts() {
-        return productRepository.findAll();
+        return this.productRepository.findAll();
     }
 
     public List<Product> listSortedProducts(String field, String order) {
-        return productRepository.findAll(Sort.by(Sort.Direction.fromString(order), field));
+        return this.productRepository.findAll(Sort.by(Sort.Direction.fromString(order), field));
     }
 
-    public Page<Product> listSortedProductsWithPagination(int offset, String field, String order) {
-        Page<Product> products = productRepository.findAll(PageRequest.of(offset, 15, Sort.Direction.fromString(order), field));
-        return products;
+    public List<Product> listSortedProductsWithPagination(Integer page, Integer size, String field,
+            String order) {
+        return this.productRepository
+                .findAll(PageRequest.of(page, size, Sort.Direction.fromString(order), field)).getContent();
     }
 
     public Optional<Product> getProduct(Long id) {
-        return productRepository.findById(id);
+        return this.productRepository.findById(id);
     }
 
     public Optional<Product> saveProduct(Product product) {
         if (Stream.of(product.getName(), product.getPrice(), product.getTime()).anyMatch(Objects::isNull))
             return Optional.empty();
-        return Optional.of(productRepository.save(product));
+        return Optional.of(this.productRepository.save(product));
     }
 
     public Optional<Product> deleteProduct(Long id) {
-        Optional<Product> optProduct = productRepository.findById(id);
+        Optional<Product> optProduct = this.productRepository.findById(id);
         if (optProduct.isPresent()) {
-            productRepository.delete(optProduct.get());
+            this.productRepository.delete(optProduct.get());
             return optProduct;
         }
         return Optional.empty();
     }
 
     public Optional<Product> updateProduct(Long id, Product product) {
-        Optional<Product> optProduct = productRepository.findById(id);
+        Optional<Product> optProduct = this.productRepository.findById(id);
         if (optProduct.isEmpty())
             return Optional.empty();
-        if(product.getName() != null)
+        if (product.getName() != null)
             optProduct.get().setName(product.getName());
-        if(product.getPrice() != null)
+        if (product.getPrice() != null)
             optProduct.get().setPrice(product.getPrice());
-        if(product.getTime() != null)
+        if (product.getTime() != null)
             optProduct.get().setTime(product.getTime());
 
-        return Optional.of(productRepository.save(optProduct.get()));
+        return Optional.of(this.productRepository.save(optProduct.get()));
     }
 
+    public void deleteAll() {
+        this.productRepository.deleteAll();
+    }
 }
