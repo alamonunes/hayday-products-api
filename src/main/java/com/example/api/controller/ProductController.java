@@ -1,23 +1,14 @@
 package com.example.api.controller;
 
-import java.net.URI;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import com.example.api.entity.Product;
 import com.example.api.service.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api/products")
@@ -30,13 +21,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> listProducts(
-            @RequestParam(name = "pag", required = false, defaultValue = "0") Integer pag,
-            @RequestParam(name = "size", required = false, defaultValue = "10") Integer size,
-            @RequestParam(name = "field", required = false, defaultValue = "id") String field,
-            @RequestParam(name = "order", required = false, defaultValue = "asc") String order) {
-        return ResponseEntity.ok(this.productService.listSortedProductsWithPagination(pag,
-                size, field, order));
+    public ResponseEntity<List<Product>> listProducts() {
+        return ResponseEntity.ok(productService.listProducts());
     }
 
     @GetMapping("/{id}")
@@ -52,10 +38,8 @@ public class ProductController {
     @PostMapping()
     public ResponseEntity<Product> saveProduct(@RequestBody Product product) {
         Optional<Product> optProduct = productService.saveProduct(product);
-        if (optProduct.isPresent()) {
-            URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri();
-            return ResponseEntity.created(uri).build();
-        }
+        if (optProduct.isPresent())
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         return ResponseEntity.badRequest().build();
     }
 
@@ -76,6 +60,21 @@ public class ProductController {
         if (optProduct.isPresent())
             return ResponseEntity.noContent().build();
         return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/s={field}")
+    public ResponseEntity<List<Product>> listSortedProducts(@PathVariable String field,
+                                                            @RequestParam(name = "order", required = false, defaultValue = "asc") String order) {
+        List<Product> products = productService.listSortedProducts(field, order);
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/p={offset}")
+    public ResponseEntity<Page<Product>> listSortedProductWithPagination(@PathVariable int offset,
+                                                            @RequestParam(name = "field", required = false, defaultValue = "id") String field,
+                                                            @RequestParam(name = "order", required = false, defaultValue = "asc") String order) {
+        Page<Product> products = productService.listSortedProductsWithPagination(offset, field, order);
+        return ResponseEntity.ok(products);
     }
 
 }

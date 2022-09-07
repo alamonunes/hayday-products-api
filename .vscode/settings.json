@@ -1,0 +1,19 @@
+{
+	"workbench.colorCustomizations": {
+		"sash.hoverBorder": "#568d32",
+		"activityBar.activeBackground": "#568d32",
+		"activityBar.background": "#568d32",
+		"activityBar.foreground": "#e7e7e7",
+		"activityBar.inactiveForeground": "#e7e7e799",
+		"sideBar.border": "#568d32",
+		"tab.activeBorder": "#568d32",
+		"activityBarBadge.background": "#a1b9de",
+		"activityBarBadge.foreground": "#15202b"
+	},
+	"peacock.color": "#6db33f",
+	"java.format.settings.url": ".vscode/java-formatter.xml",
+	"[java]": {
+		"editor.tabSize": 4
+	},
+	"java.configuration.updateBuildConfiguration": "interactive"
+}
